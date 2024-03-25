@@ -1,12 +1,21 @@
+"use client"
 import React from 'react'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 import RecentBattles from '../../components/recent-battles/recent-battles'
 import Explore from '../../components/explore/explore'
+import {Plus} from "lucide-react"
+import { Button } from '@/components/ui/button'
 import MyPokemons from '@/components/my pokemons/my-pokemons'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
+import { useRouter } from 'next/navigation'
 
 const page = ({children}) => {
+const router = useRouter()
+  const onAddPokemonHandle =() => {
+    router.push("/pokemons")
+  }
+
   return (
       <>
        <Navbar/> 
@@ -39,12 +48,19 @@ const page = ({children}) => {
             <Card>
                   <CardHeader>
                     <CardTitle className="text-sm">My Pokemons</CardTitle>
+                    
                   </CardHeader>
+                  
                   <CardContent className="p-0">
                   <MyPokemons pokeImg="/pngegg.png"/>
+                  
                   </CardContent>
+
             </Card>
+            <Button variant="default"   > 
+            <Plus onClick={onAddPokemonHandle} />Add Pokemon</Button>
             </div>
+
             </div>
 
       
