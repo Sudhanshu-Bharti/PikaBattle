@@ -15,7 +15,7 @@ const Navbar = async () => {
         <div className="flex items-center gap-3">
           <div>
           <Button size="lg" variant="outline">
-                   <Link href='/login'>Login</Link>
+               <Link href='/login'>Login</Link>
           </Button>
           </div>
 
