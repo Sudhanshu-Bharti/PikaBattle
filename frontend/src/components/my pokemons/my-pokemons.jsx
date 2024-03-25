@@ -5,7 +5,7 @@ import { Button } from "../ui/button"
 import axios from "axios"
 const MyPokemons = ({pokeImg}) => {
     const [pokemonNames, setPokemonNames] = useState([]);
-    const [img , setImg] = useState([])
+    // const [img , setImg] = useState([])
     useEffect(() => {
         const fetchData = async () => {
           try {
@@ -15,13 +15,13 @@ const MyPokemons = ({pokeImg}) => {
           } catch (error) {
             console.error("Error fetching data: ", error);
           }
-        const fetchImg = async () => {
-            try {
-                const response = await axios.get("/pokesprite/")
-            } catch (error) {
-                console.log(error);
-            }
-        }
+        // const fetchImg = async () => {
+        //     try {
+        //         const response = await axios.get("/pokesprite/")
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
 
         };
       
