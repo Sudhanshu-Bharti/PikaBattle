@@ -25,8 +25,8 @@ const io=new Server(server,{
 // socket things
 
 //router import 
-
+import playerRouter from '../src/routes/player.routes.js'
 //routes declaration
-
+app.use('/',playerRouter);
 
 export {io,server};
