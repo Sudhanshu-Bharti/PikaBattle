@@ -3,8 +3,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import {createServer} from 'http';
 import {Server} from 'socket.io';
+import dotenv from 'dotenv';
 const app=express();
-
+dotenv.config({
+    path:'./.env'
+})
+console.log(process.env.CORS_ORIGIN);
 app.use(cors({
     origin:process.env.CORS_ORIGIN, 
     credentials:true
