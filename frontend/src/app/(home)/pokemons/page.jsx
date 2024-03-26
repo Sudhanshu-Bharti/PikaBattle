@@ -81,7 +81,7 @@ const Pokemons = () => {
 
   return (
     <div className="container mx-auto my-8">
-      <div className="mt-8">
+      <div className="mt-8 sticky top-0 bg-slate-200 border rounded-md shadow-md">
         <h2 className="text-xl font-semibold mb-2">Party</h2>
         <ul className="flex flex-row pl-6">
           {party.map((pokemon, index) => (
@@ -96,7 +96,7 @@ const Pokemons = () => {
             </div>
           ))}
         </ul>
-        <button onClick={handleSubmitParty}>Submit Party</button>
+        <button onClick={handleSubmitParty} className='rounded-md p-2 bg-green-500 text-slate-100 tracking-wide font-semibold m-3'>Submit Party</button>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>

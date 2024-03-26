@@ -43,7 +43,7 @@ class lobby{
                 userList.splice(i,1);
             }
         }
-        battleRooms.delete(roomId);
+        battleRooms.delete(roomId); 
 
     }
 
