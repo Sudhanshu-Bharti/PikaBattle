@@ -7,30 +7,69 @@ const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
   const [page, setPage] = useState(0);
   const [party, setParty] = useState([]);
+  const [id , setID] = useState("");
   const limit = 20;
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/?offset=${page * limit}&limit=${limit}`);
-      const data = await Promise.all(response.data.results.map(async (pokemon) => {
-        const pokemonData = await axios.get(pokemon.url);
-        return { name: pokemon.name, imageUrl: pokemonData.data.sprites.front_default };
-      }));
-      setPokemons(data);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/?offset=${page * limit}&limit=${limit}`);
+        const data = await Promise.all(response.data.results.map(async (pokemon) => {
+          const pokemonData = await axios.get(pokemon.url);
+          const movesData = await Promise.all(pokemonData.data.moves.slice(0, 4).map(async (move) => {
+            const moveData = await axios.get(move.move.url);
+            return { name: move.move.name, damage: moveData.data.power };
+          }));
+          return { 
+            name: pokemonData.data.name, 
+            imageUrl: pokemonData.data.sprites.front_default, 
+            moves: movesData,
+            stats: pokemonData.data.stats
+          };
+        }));
+        setPokemons(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
     fetchData();
   }, [page]);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setID(storedUserId);
+    }
+  }, []);
 
   const addToParty = (pokemon) => {
     if (party.length < 6) {
       setParty([...party, pokemon]);
-    } else {
-      return 
+    }
+  };
+
+  const handleSubmitParty = async () => {
+    try {
+      if (party.length !== 6) {
+        alert("Please add 6 Pokemon to the party before submitting.");
+        return;
+      }
+
+      console.log("Handling party", party);
+
+      const response = await axios.post('http://localhost:4000/add-to-party', {
+        playerId: id, 
+        pokemons: party.map(pokemon => ({
+          name: pokemon.name,
+          imgUrl: pokemon.imageUrl,
+          hp: pokemon.stats[0].base_stat,
+          attacks: pokemon.moves 
+        }))
+      });
+
+      console.log("Party added successfully:", response.data);
+    } catch (error) {
+      console.error("Error adding party:", error);
     }
   };
 
@@ -42,6 +81,24 @@ const Pokemons = () => {
 
   return (
     <div className="container mx-auto my-8">
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-2">Party</h2>
+        <ul className="flex flex-row pl-6">
+          {party.map((pokemon, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <img src={pokemon.imageUrl} alt={pokemon.name} className="w-32 h-32" />
+              <button 
+                onClick={() => removeFromParty(index)}
+                className="relative bottom-24 left-7 bg-red-100 hover:bg-red-500 text-white px-1 py-1 rounded-full shadow-md"
+              >
+                <MinusIcon size="10"/>
+              </button>
+            </div>
+          ))}
+        </ul>
+        <button onClick={handleSubmitParty}>Submit Party</button>
+      </div>
+
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         {pokemons.map((pokemon, index) => (
           <div key={index} className='flex flex-col items-center p-4 border rounded-md shadow-md'>
@@ -73,24 +130,6 @@ const Pokemons = () => {
         >
           Next Page
         </button>
-      </div>
-
-      
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-2">Party</h2>
-        <ul className="flex flex-row pl-6">
-          {party.map((pokemon, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <img src={pokemon.imageUrl} alt={pokemon.name} className="w-32 h-32" />
-              <button 
-                onClick={() => removeFromParty(index)}
-                className="relative bottom-24 left-7 bg-red-100 hover:bg-red-500 text-white px-1 py-1 rounded-full shadow-md "
-              >
-                <MinusIcon size="10"/>
-              </button>
-            </div>
-          ))}
-        </ul>
       </div>
     </div>
   );

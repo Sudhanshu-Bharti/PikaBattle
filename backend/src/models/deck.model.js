@@ -10,7 +10,7 @@ const pokemonSchema={
             required:true
         },
         damage:{
-            type:Number,
+            type:Number || null,
         }
     }],
 }
