@@ -40,7 +40,7 @@ const registerPlayer=async(req,res,next)=>{
 
 const loginPlayer=async(req,res,next)=>{
     try{
-        // console.log(req.body);
+        console.log(req.body);
         const{username,password}=req.body;
         if(!username){
             throw new Error("Username is required");
@@ -70,5 +70,7 @@ const loginPlayer=async(req,res,next)=>{
         next(error)
     }
 }
+
+
 
 export {registerPlayer,loginPlayer};

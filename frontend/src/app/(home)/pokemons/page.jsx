@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import { MinusIcon } from 'lucide-react';
 
 const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -26,7 +27,17 @@ const Pokemons = () => {
   }, [page]);
 
   const addToParty = (pokemon) => {
-    setParty([...party, pokemon]);
+    if (party.length < 6) {
+      setParty([...party, pokemon]);
+    } else {
+      return 
+    }
+  };
+
+  const removeFromParty = (index) => {
+    const updatedParty = [...party];
+    updatedParty.splice(index, 1);
+    setParty(updatedParty);
   };
 
   return (
@@ -34,13 +45,13 @@ const Pokemons = () => {
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         {pokemons.map((pokemon, index) => (
           <div key={index} className='flex flex-col items-center p-4 border rounded-md shadow-md'>
-            <p className='text-lg font-semibold text-gray-800'>{pokemon.name}</p>
+            <p className='text-lg font-semibold text-gray-600'>{pokemon.name}</p>
             <div className="border border-gray-400 p-2 rounded-full">
               <img src={pokemon.imageUrl} alt={pokemon.name} className="w-32 h-32" />
             </div>
             <button 
               onClick={() => addToParty(pokemon)}
-              className="mt-4 bg-orange-400 hover:bg-orange-500 text-white px-4 py-2 rounded-md shadow-md"
+              className="mt-4 bg-green-600 hover:bg-green-400 text-white px-4 py-2 rounded-md shadow-md"
             >
               Add to Party
             </button>
@@ -64,11 +75,20 @@ const Pokemons = () => {
         </button>
       </div>
 
+      
       <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-2">Party</h2>
-        <ul className="list-disc pl-6">
+        <h2 className="text-xl font-semibold mb-2">Party</h2>
+        <ul className="flex flex-row pl-6">
           {party.map((pokemon, index) => (
+            <div key={index} className="flex flex-col items-center">
               <img src={pokemon.imageUrl} alt={pokemon.name} className="w-32 h-32" />
+              <button 
+                onClick={() => removeFromParty(index)}
+                className="relative bottom-24 left-7 bg-red-100 hover:bg-red-500 text-white px-1 py-1 rounded-full shadow-md "
+              >
+                <MinusIcon size="10"/>
+              </button>
+            </div>
           ))}
         </ul>
       </div>

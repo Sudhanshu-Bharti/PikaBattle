@@ -1,7 +1,5 @@
 "use client"
 import {React, useState, useEffect} from 'react'
-import Navbar from '../../components/navbar'
-import Footer from '../../components/footer'
 import RecentBattles from '../../components/recent-battles/recent-battles'
 import Explore from '../../components/explore/explore'
 import {Plus} from "lucide-react"

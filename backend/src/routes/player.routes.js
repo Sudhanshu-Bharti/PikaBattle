@@ -5,5 +5,6 @@ const router=Router();
 
 router.post("/register",registerPlayer);
 router.post("/login", loginPlayer);
+// router.post("/add-to-party", addToParty);
 
 export default router;
