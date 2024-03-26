@@ -3,25 +3,23 @@ import React, { useState } from 'react'
 import {Label} from "../../../components/ui/label"
 import {Input} from "../../../components/ui/input"
 import {Button} from "../../../components/ui/button"
-
+import axios from "axios"
 const Page = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [id, setID] = useState('');
 
-  const handleLogin = async () => {
-    const response = await fetch('http://localhost:4000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password })
-    });
+   const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/login', { username, password });
+      const { accessToken, user } = response.data;
+      setID(user._id);
+      localStorage.setItem('userId', user._id);
 
-    if (response.ok) {
-      const data = await response.json();
+      console.log('User logged in:', user._id);
       window.location.href="/"
-    } else {
-      console.log(error);
+    } catch (error) {
+      console.error('Login failed: ', error);
     }
   };
 

@@ -1,7 +1,5 @@
 "use client"
-import React from 'react'
-import Navbar from '../../components/navbar'
-import Footer from '../../components/footer'
+import {React, useState, useEffect} from 'react'
 import RecentBattles from '../../components/recent-battles/recent-battles'
 import Explore from '../../components/explore/explore'
 import {Plus} from "lucide-react"
@@ -11,6 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { useRouter } from 'next/navigation'
 
 const page = ({children}) => {
+  const [id, setID] = useState('');
+
+  useEffect(() => {
+  
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setID(storedUserId);
+    }
+  }, []);
+
 const router = useRouter()
   const onAddPokemonHandle =() => {
     router.push("/pokemons")
@@ -18,8 +26,12 @@ const router = useRouter()
 
   return (
       <>
-       <Navbar/> 
         <main className="container p-4 flex-1">
+        {id && (
+        <div>
+          <p>id: {id}</p>
+        </div>
+      )}
         <div className="grid gap-4 md:grid-rows-2 md:gap-4 lg:grid-rows-1">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
@@ -65,7 +77,6 @@ const router = useRouter()
 
       
         </main>
-      <Footer/>
       </>
   )
 }
