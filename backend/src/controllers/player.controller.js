@@ -73,4 +73,52 @@ const loginPlayer=async(req,res,next)=>{
 
 
 
-export {registerPlayer,loginPlayer};
+const addPokemon=async(req,res,next)=>{
+    try{
+        const {playerId,pokemons}=req.body;
+        let deck=await Deck.findOne({playerId});
+        if(deck){
+            deck.deck=[];
+            pokemons.forEach((item)=>deck.deck.push(item));
+            await deck.save()
+
+        }else{
+            deck=await Deck.create({
+                playerId,
+                deck:pokemons
+            });
+
+        }
+        res.status(201).json({
+            status:201,
+            deck:deck,
+            message: "Deck added Successfully!"
+        })
+        
+    }catch(error){
+        next(error);
+    }
+}
+
+const getDeck=async(req,res,next)=>{
+    try {
+        const {playerId}=req.body;
+        let deck=await Deck.findOne({playerId});
+        if(deck){
+            res.status(200).json({   
+               status: 200 ,
+               data : deck ,
+               message:"Deck retrieved succesfully"
+           }) 
+        }else{
+            res.status(404).json({
+                status : 404 ,
+                message : 'Player not found'
+            })  
+        } 
+    } catch (error) {
+        next(error);
+    }
+}
+
+export {registerPlayer,loginPlayer,addPokemon,getDeck};
