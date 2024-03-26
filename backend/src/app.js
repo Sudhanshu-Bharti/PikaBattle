@@ -28,6 +28,10 @@ const io=new Server(server,{
 });
 
 // socket things
+io.on('connection',(socket)=>{
+    console.log('user '+socket.id);
+    
+})
 
 //router import 
 import playerRouter from '../src/routes/player.routes.js'
