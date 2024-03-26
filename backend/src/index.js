@@ -5,6 +5,7 @@ import { server } from "./app.js";
 dotenv.config({
     path:'./.env'
 })
+// console.log(process.env.CORS_ORIGIN)
 
 connectDB().then(()=>{
     server.listen(process.env.PORT||8000,()=>{
