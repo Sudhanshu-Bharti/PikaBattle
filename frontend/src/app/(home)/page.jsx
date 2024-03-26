@@ -18,7 +18,6 @@ const router = useRouter()
 
   return (
       <>
-       <Navbar/> 
         <main className="container p-4 flex-1">
         <div className="grid gap-4 md:grid-rows-2 md:gap-4 lg:grid-rows-1">
           <div className="grid gap-4 md:grid-cols-2">
@@ -65,7 +64,6 @@ const router = useRouter()
 
       
         </main>
-      <Footer/>
       </>
   )
 }
