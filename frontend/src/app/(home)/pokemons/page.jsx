@@ -81,8 +81,8 @@ const Pokemons = () => {
 
   return (
     <div className="container mx-auto my-8">
-      <div className="mt-8 sticky top-0 bg-slate-200 border rounded-md shadow-md">
-        <h2 className="text-xl font-semibold mb-2">Party</h2>
+      <div className="mt-8 sticky top-24 bg-slate-200 border rounded-md shadow-md">
+        <h2 className="text-xl p-3 font-semibold mb-2">Party</h2>
         <ul className="flex flex-row pl-6">
           {party.map((pokemon, index) => (
             <div key={index} className="flex flex-col items-center">
