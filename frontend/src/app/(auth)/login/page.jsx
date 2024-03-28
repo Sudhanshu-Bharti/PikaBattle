@@ -17,8 +17,8 @@ const Page = () => {
       const { accessToken, user } = response.data;
       setID(user._id);
       localStorage.setItem('userId', user._id);
-
-      console.log('User logged in:', user._id);
+      localStorage.setItem('username', user.username)
+      console.log('User logged in:', user.username);
       window.location.href="/"
     } catch (error) {
       console.error('Login failed: ', error);

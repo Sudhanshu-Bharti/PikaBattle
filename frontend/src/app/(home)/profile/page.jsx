@@ -5,6 +5,7 @@ import {Card , CardContent} from "../../../components/ui/card"
 
 const Page = () => {
   const storedUserId = localStorage.getItem('userId');
+  const storedUsername = localStorage.getItem('username')
   const router = useRouter();
 
   useEffect(() => {
@@ -28,9 +29,12 @@ const Page = () => {
           width="96"
         />
         <div className="text-3xl font-medium leading-none mt-3"></div>
-        {storedUserId && (
+        {storedUserId && storedUsername &&  (
        
-     <div className="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">{storedUserId}</div>
+            <div className="m-3 text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
+            <div className='pb-2'> Username: {storedUsername}</div>
+            User ID :    {storedUserId}
+            </div>
 
       )}
    
