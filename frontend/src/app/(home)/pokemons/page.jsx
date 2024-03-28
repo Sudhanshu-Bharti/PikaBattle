@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { MinusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Pokemons = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -9,6 +10,7 @@ const Pokemons = () => {
   const [party, setParty] = useState([]);
   const [id , setID] = useState("");
   const limit = 20;
+  const router= useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,8 +41,12 @@ const Pokemons = () => {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       setID(storedUserId);
+      console.log("id" , id)
+    } else  if (!storedUserId) {
+      router.push('/login')
     }
-  }, []);
+  }, [id]);
+  // 
 
   const addToParty = (pokemon) => {
     if (party.length < 6) {

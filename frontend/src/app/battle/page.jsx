@@ -10,10 +10,18 @@ const page = () => {
     const storedUserId = localStorage.getItem('userId');
 
     const [matchmakingComplete , setMatchmakingComplete] = useState(false)
-        useEffect(() => {
+  
+    useEffect(() => {
+      if(!storedUserId){
+        router.push('/login')
+      }
+    }, [storedUserId])
+    
+ 
+    useEffect(() => {
           const timer = setTimeout(()=> {
             setMatchmakingComplete(true)
-          }, 30000000)
+          }, 30000)
 
           return () => clearTimeout(timer)
         }, [])

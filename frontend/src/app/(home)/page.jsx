@@ -10,11 +10,20 @@ import { useRouter } from 'next/navigation'
 
 const page = ({children}) => {
   
+  const storedUserId = localStorage.getItem('userId');
 
-const router = useRouter()
+  const router = useRouter()
   const onAddPokemonHandle =() => {
     router.push("/pokemons")
   }
+
+  useEffect(() => {
+    if (!storedUserId) {
+      router.push('/login')
+    }
+  
+  }, [storedUserId])
+  
 
   return (
       <>

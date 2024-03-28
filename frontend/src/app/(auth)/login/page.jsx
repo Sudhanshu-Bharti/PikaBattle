@@ -3,7 +3,9 @@ import React, { useState } from 'react'
 import {Label} from "../../../components/ui/label"
 import {Input} from "../../../components/ui/input"
 import {Button} from "../../../components/ui/button"
+import Link from "next/link";
 import axios from "axios"
+
 const Page = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +42,7 @@ const Page = () => {
             <Input id="password" required type="password" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
           <Button className="w-full" onClick={handleLogin}>Login</Button>
+          <span className='text-sm'>Not Registered? <Button variant="link"><Link  className='hover:text-orange-400' href= "/register">Register</Link></Button> </span>
         </div>
       </div>
     </div>
