@@ -62,14 +62,22 @@ const Page = () => {
     fetchDeckData();
   }, []);
 
+      //ye sb link lene k liye h
+        const url = deckData && deckData.data && deckData.data.deck && deckData.data.deck[0] && deckData.data.deck[0].imgUrl;
+        let newUrl = null;
 
-    //ye sb link lene k liye h
-  const url = deckData.data.deck[0].imgUrl
-  const lastIndex = url.lastIndexOf("/");
-  const index = url.substring(lastIndex + 1, url.lastIndexOf("."));
-  const newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index}.gif`;
+        if (url) {
+          const lastIndex = url.lastIndexOf("/");
+          const index = url.substring(lastIndex + 1, url.lastIndexOf("."));
+          newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index}.gif`;
 
-  console.log(newUrl);
+          console.log(newUrl);
+        } else {
+          console.error("imgurl not fetched");
+        }
+
+
+  // console.log(newUrl);
 
   
   return (
