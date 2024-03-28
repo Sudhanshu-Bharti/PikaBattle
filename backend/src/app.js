@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import {createServer} from 'http';
 import {Server} from 'socket.io';
 import dotenv from 'dotenv';
+import lobby from './management/player.manangement.js';
 const app=express();
 dotenv.config({
     path:'./.env'
@@ -22,14 +23,22 @@ const server=createServer(app);
 const io=new Server(server,{
     cors:{
         origin:process.env.CORS_ORIGIN,
-        allowedHeaders: ['Content-Type'],
+        allowedHeaders: ['Content-Type'], 
         credentials:true
     }
 });
+const battleLobby=new lobby;
 
 // socket things
 io.on('connection',(socket)=>{
-    console.log('user '+socket.id);
+    console.log('user '+socket.id); 
+    socket.on('addUser',(res)=>{
+        console.log(res);
+        battleLobby.addUser(res.playerId,socket.id,socket);
+        battleLobby.showUsers();
+        battleLobby.matchMaking();  
+        battleLobby.showUsers();  
+    });
     
 })
 

@@ -61,8 +61,8 @@ const router = useRouter()
                   </CardContent>
 
             </Card>
-            <Button variant="default"   > 
-            <Plus onClick={onAddPokemonHandle} />Add Pokemon</Button>
+            <Button variant="default" onClick={onAddPokemonHandle}> 
+            <Plus />Add Pokemon</Button>
             </div>
 
             </div>
