@@ -103,7 +103,9 @@ const addPokemon=async(req,res,next)=>{
 const getDeck=async(req,res,next)=>{
     try {
         const {playerId}=req.body;
+
         let deck=await Deck.findOne({playerId});
+        
         if(deck){
             res.status(200).json({   
                status: 200 ,

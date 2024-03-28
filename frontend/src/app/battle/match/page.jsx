@@ -1,11 +1,64 @@
-import React from 'react';
+"use client"
+import {React, useEffect, useState} from 'react';
 import { Button } from '../../../components/ui/button';
 import Image from "next/image"
+import {io} from  "socket.io-client"
+import axios from "axios" 
+
+
 const Page = () => {
-  return (
+
+  const socket = io('http://localhost:4000'); 
+
+  const [playerTurn, setPlayerTurn] = useState(true); 
+  const [waiting, setWaiting] = useState(false); 
+  const [deckData, setDeckData] = useState(null);
+
+
+    
+  const handleAttack = () => {
+      console.log("attack by user");
+      setPlayerTurn(false);
+      setWaiting(true)
+      socket.emit('turn-change','change turn please');
+    };
+
+    useEffect(() => {
+      socket.on('playerTurn', (data) => {
+        // setPlayerTurn(data.playerTurn);
+        setPlayerTurn(true);
+          setWaiting(false);
+      });
+
+      return () => {
+        socket.off('playerTurnChange');
+      }
+    }, [])
+    
+    useEffect(() => {
+      const fetchDeckData = async () => {
+        try {
+          const playerId = localStorage.getItem('userId'); 
+          console.log(playerId);
+          const response = await axios.get('http://localhost:4000/get-pokemon-info', {
+            data:  {playerId}  
+          }); 
+          console.log(response.data);
+          setDeckData(response.data);
+        } catch (error) {
+          console.error('Error fetching deck data:', error);
+        }
+      };
+    
+      fetchDeckData();
+    }, []);
+    
+  
+    return (
     <div className="grid items-center justify-center w-full gap-1" id='battle'>
         <div className="relative w-lvw h-96" style={{ backgroundImage: "url('/battleBackground2.png')", backgroundSize: "cover", backgroundPosition: "center" , objectFit:"fill" }}>
         <div className="flex justify-around items-center ">
+
         <div className="grid items-center justify-center w-full gap-4 right-full ">
           <div className="grid items-center justify-center gap-2 pr-80 pt-64">
             <div className="flex items-center gap-2">
@@ -61,42 +114,53 @@ const Page = () => {
         {/* <Image className='relative' src="/battleBackground.png" width="870" height="790" style={{}} /> */}
       
 
-      <div className='flex flex-row-2'>
-        <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
-          <h1 className='font-semibold text-xl'>Attacks</h1>
-          <div className='grid grid-cols-4 gap-2'>
-            <Button size="lg" variant="outline">
-              Tackle
-            </Button>
-            <Button size="lg" variant="outline">
-              Growl
-            </Button>
-            <Button size="lg" variant="outline">
-              Razor Leaf
-            </Button>
-            <Button size="lg" variant="outline">
-              Vine Whip
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
-          <h1 className='font-semibold text-xl'>Bag Items</h1>
-          <div className='grid grid-cols-4 gap-2'>
-            <Button size="sm" variant="outline">
-              Revive
-            </Button>
-            <Button size="sm" variant="outline">
-              Potion
-            </Button>
-            <Button size="sm" variant="outline">
-              Super Potion
-            </Button>
-            <Button size="sm" variant="outline">
-              Max potion
-            </Button>
-          </div>
+        <div className='flex flex-row-2'>
+          {waiting ? (
+            <div className=" bottom-44 left-0 w-full h-28 bg-white bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-4 rounded-lg">
+                <p className="text-lg font-semibold">Wait for your turn...</p>
+              </div>
+            </div>
+          ) : (
+    <>
+      <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
+        <h1 className='font-semibold text-xl'>Attacks</h1>
+        <div className='grid grid-cols-4 gap-2'>
+          <button className='border-amber-400' onClick={playerTurn ? handleAttack : undefined}>
+            Tackle
+          </button>
+          <Button size="lg" variant="outline">
+            Growl
+          </Button>
+          <Button size="lg" variant="outline">
+            Razor Leaf
+          </Button>
+          <Button size="lg" variant="outline">
+            Vine Whip
+          </Button>
         </div>
       </div>
+      <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
+        <h1 className='font-semibold text-xl'>Bag Items</h1>
+        <div className='grid grid-cols-4 gap-2'>
+          <Button size="sm" variant="outline">
+            Revive
+          </Button>
+          <Button size="sm" variant="outline">
+            Potion
+          </Button>
+          <Button size="sm" variant="outline">
+            Super Potion
+          </Button>
+          <Button size="sm" variant="outline">
+            Max potion
+          </Button>
+        </div>
+      </div>
+    </>
+  )}
+</div>
+
 
       <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
         <h1 className='font-semibold text-xl'>Battle Log</h1>
