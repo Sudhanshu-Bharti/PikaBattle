@@ -1,10 +1,13 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { redirect, useRouter } from 'next/navigation'
 import {Progress} from "../../components/ui/progress"
+import { io } from 'socket.io-client'
 
 const page = () => {
     const router = useRouter()
+    const socket=useRef();
+    const storedUserId = localStorage.getItem('userId');
 
     const [matchmakingComplete , setMatchmakingComplete] = useState(false)
         useEffect(() => {
@@ -21,6 +24,21 @@ const page = () => {
           }
 
     }, [matchmakingComplete])
+
+      useEffect(()=>{
+        const newSocket=io('http://localhost:4000/');//or your server link sudhanshu dekh lena ek baar 
+        socket.current=newSocket;
+        //on connect
+        newSocket.on('connect',()=>{
+          console.log("Connected to Server");
+          newSocket.emit('addUser',{playerId:storedUserId,username:'soham'});
+        
+        });
+        newSocket.on('battle-started',(res)=>{
+          console.log(res);
+          setMatchmakingComplete(true)
+        });
+      })
 
 
   return (
