@@ -3,10 +3,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import { redirect, useRouter } from 'next/navigation'
 import {Progress} from "../../components/ui/progress"
 import { io } from 'socket.io-client'
-
+const socket=useRef();
 const page = () => {
     const router = useRouter()
-    const socket=useRef();
     const storedUserId = localStorage.getItem('userId');
 
     const [matchmakingComplete , setMatchmakingComplete] = useState(false)
@@ -71,4 +70,5 @@ const page = () => {
   )
 }
 
+export{socket};
 export default page

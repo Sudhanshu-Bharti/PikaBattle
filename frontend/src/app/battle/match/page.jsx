@@ -4,11 +4,11 @@ import { Button } from '../../../components/ui/button';
 import Image from "next/image"
 import {io} from  "socket.io-client"
 import axios from "axios" 
-
+import { socket } from '../page';
 
 const Page = () => {
 
-  const socket = io('http://localhost:4000'); 
+  // const socket = io('http://localhost:4000'); 
 
   const [playerTurn, setPlayerTurn] = useState(true); 
   const [waiting, setWaiting] = useState(false); 
@@ -36,7 +36,7 @@ const Page = () => {
       setPlayerTurn(true);
       setWaiting(false);
     });
-
+    socket.on('opponent-deck',(res)=>console.log(res));
     return () => {
       socket.off('playerTurnChange');
     }
@@ -54,6 +54,7 @@ const Page = () => {
         // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/25.gif"
         console.log(response.data);
         setDeckData(response.data);
+        socket.broadcast.emit('opponent-deck', response.data);
       } catch (error) {
         console.error('Error fetching deck data:', error);
       }
