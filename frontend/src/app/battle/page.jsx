@@ -1,74 +1,71 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
-import { redirect, useRouter } from 'next/navigation'
-import {Progress} from "../../components/ui/progress"
-import { io } from 'socket.io-client'
-const socket=useRef();
-const page = () => {
-    const router = useRouter()
-    const storedUserId = localStorage.getItem('userId');
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Progress } from "../../components/ui/progress";
+import { useSocket } from "../Context/SocketContext";
 
-    const [matchmakingComplete , setMatchmakingComplete] = useState(false)
-  
-    useEffect(() => {
-      if(!storedUserId){
-        router.push('/login')
-      }
-    }, [storedUserId])
-    
- 
-    useEffect(() => {
-          const timer = setTimeout(()=> {
-            setMatchmakingComplete(true)
-          }, 30000)
+const Page = () => {
+  const router = useRouter();
+  const socketRef = useRef(null); 
+  const storedUserId = localStorage.getItem('userId');
+  const socket = useSocket(); 
 
-          return () => clearTimeout(timer)
-        }, [])
+  const [matchmakingComplete, setMatchmakingComplete] = useState(false);
 
-        useEffect(() => {
-          if (matchmakingComplete) {
-            router.push('/battle/match')
-          }
+  useEffect(() => {
+    if (!storedUserId) {
+      router.push('/login');
+    }
+  }, [storedUserId, router]);
 
-    }, [matchmakingComplete])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMatchmakingComplete(true);
+    }, 30000);
 
-      useEffect(()=>{
-        const newSocket=io('http://localhost:4000/');//or your server link sudhanshu dekh lena ek baar 
-        socket.current=newSocket;
-        //on connect
-        newSocket.on('connect',()=>{
-          console.log("Connected to Server");
-          newSocket.emit('addUser',{playerId:storedUserId,username:'soham'});
-        
-        });
-        newSocket.on('battle-started',(res)=>{
-          console.log(res);
-          setMatchmakingComplete(true)
-        });
-      })
+    return () => clearTimeout(timer);
+  }, []);
 
+  useEffect(() => {
+    if (socket) { 
+      socketRef.current = socket;
+
+      //on connect
+      socket.on('connect', () => {
+        console.log("Connected to Server");
+        socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
+      });
+      socket.on('battle-started', (res) => {
+        console.log(res);
+        setMatchmakingComplete(true);
+      });
+    }
+  }, [socket, storedUserId]);
+
+  useEffect(() => {
+    if (matchmakingComplete) {
+      router.push('/battle/match');
+    }
+  }, [matchmakingComplete, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4 text-center relative">
-    <img
-      className="absolute inset-0 z-0 object-cover w-full h-full"
-      src="/pokemon-battle.jpg"
-      alt="Background"
-    />
-    <div className="relative z-10">
-      <div className="w-full max-w-sm space-y-2">
-        <div className="text-4xl font-bold text-black">Matchmaking in Queue...</div>
-        <div className="flex items-center space-x-2 text-sm">
-          <span className="font-semibold">Finding a match</span>
-        </div>
-
+      <img
+        className="absolute inset-0 z-0 object-cover w-full h-full"
+        src="/pokemon-battle.jpg"
+        alt="Background"
+      />
+      <div className="relative z-10">
+        <div className="w-full max-w-sm space-y-2">
+          <div className="text-4xl font-bold text-black">Matchmaking in Queue...</div>
+          <div className="flex items-center space-x-2 text-sm">
+            <span className="font-semibold">Finding a match</span>
+          </div>
           <Progress className="h-4 w-96" value={45} />
-
+        </div>
       </div>
     </div>
-  </div>
-  )
-}
+  );
+};
 
-export{socket};
 export default page
