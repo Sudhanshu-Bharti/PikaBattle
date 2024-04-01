@@ -50,7 +50,7 @@ class lobby{
 
     };
     showUsers=async()=>{
-        console.log(userList);
+        // console.log("total list of users:", userList);
         console.log("rooms:",battleRooms);
     }
 
