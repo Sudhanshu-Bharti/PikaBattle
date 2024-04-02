@@ -37,8 +37,8 @@ io.on('connection',(socket)=>{
         battleLobby.addUser(res.playerId,socket.id,socket);
         battleLobby.showUsers();
         battleLobby.matchMaking();  
-        battleLobby.showUsers();  
-    });
+        battleLobby.showUsers();   
+    }); 
     
 })
 
