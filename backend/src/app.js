@@ -38,7 +38,10 @@ io.on('connection',(socket)=>{
         battleLobby.showUsers();
         battleLobby.matchMaking();  
         battleLobby.showUsers();   
-    }); 
+    });
+    socket.on('opponent-deck',(res)=>{
+        socket.broadcast.emit('opponent-deck',res);
+    }) 
     
 })
 
