@@ -4,11 +4,13 @@ import { Button } from '../../../components/ui/button';
 import Image from "next/image"
 import {io} from  "socket.io-client"
 import axios from "axios" 
-import { socket } from '../page';
+// import { socket } from '../page';
+import { useSocket } from '../../Context/SocketContext';
 
 const Page = () => {
 
   // const socket = io('http://localhost:4000'); 
+  const socket=useSocket();
 
   const [playerTurn, setPlayerTurn] = useState(true); 
   const [waiting, setWaiting] = useState(false); 
