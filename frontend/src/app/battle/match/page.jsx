@@ -1,10 +1,7 @@
 "use client"
 import {React, useEffect, useState} from 'react';
 import { Button } from '../../../components/ui/button';
-import Image from "next/image"
-import {io} from  "socket.io-client"
 import axios from "axios" 
-// import { socket } from '../page';
 import { useSocket } from '../../Context/SocketContext';
 
 const Page = () => {
@@ -26,9 +23,9 @@ const Page = () => {
       socket.emit('turn-change','change turn please');
 
       try {
-        const attackDamage = deckData.data.deck[0].attacks[0].damage; // Assuming the first attack in the array
+        const attackDamage = deckData.data.deck[0].attacks[0].damage; 
         console.log("Attack Damage: ", attackDamage);
-        // You can use the attackDamage here for whatever you need
+      
       } catch (error) {
         console.error('Error fetching attack data:', error);
       }
@@ -41,10 +38,16 @@ const Page = () => {
       setPlayerTurn(true);
       setWaiting(false);
     });
-    socket.on('opponent-deck',(res)=>{
-      console.log(res);
-      setOpponentDeck(res?.data);
+
+    socket.on('opponent-deck', (res) => {
+      if (res && res.deckData && res.deckData.data && Array.isArray(res.deckData.data.deck) && res.deckData.data.deck.length > 0) {
+        setOpponentDeck(res.deckData.data.deck);
+        console.log("opponent deck: ", res.deckData.data.deck); 
+      } else {
+        console.log("Received invalid deck data:", res.deckData);
+      }
     });
+    
     
   
     return () => {
@@ -52,12 +55,27 @@ const Page = () => {
     }
   }
   }, [socket]);
+
+  
   useEffect(()=>{
     if(socket){
       socket.emit('opponent-deck', {message:'opponentDeck',deckData});
     }
+    // console.log("opp deck",);
   },[socket,deckData])
     
+
+  // useEffect(()=>{
+  //   socket.on('opponent-deck',(res)=>{
+  //     console.log(res);
+      
+  //     const opponentDeckData = res.deckData;
+    
+  //     setOpponentDeck(opponentDeckData);
+  //   });
+    
+  // } , [])
+
   useEffect(() => {
     const fetchDeckData = async () => {
       try {
@@ -79,20 +97,44 @@ const Page = () => {
     fetchDeckData();
   }, []);
 
+  
+  const generateDeckUrl = (deckData) => {
+    const url = deckData && deckData.data && deckData.data.deck && deckData.data.deck[0] && deckData.data.deck[0].imgUrl;
+    let newUrl = null;
 
-      //ye sb link lene k liye h
-        const url = deckData && deckData.data && deckData.data.deck && deckData.data.deck[0] && deckData.data.deck[0].imgUrl;
-        let newUrl = null;
+    if (url) {
+      const lastIndex = url.lastIndexOf('/');
+      const index = url.substring(lastIndex + 1, url.lastIndexOf('.'));
+      newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index}.gif`;
+    } else {
+      console.error('imgurl not fetched');
+    }
 
-        if (url) {
-          const lastIndex = url.lastIndexOf("/");
-          const index = url.substring(lastIndex + 1, url.lastIndexOf("."));
-          newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index}.gif`;
+    return newUrl;
+  };
 
-          console.log(newUrl);
-        } else {
-          console.error("imgurl not fetched");
-        }
+  const generateOpponentDeckUrl = (opponentDeck) => {
+    const opponentUrl = opponentDeck &&  opponentDeck?.length > 0 && opponentDeck[0]?.imgUrl;
+    let newUrl = null;
+  
+    if (opponentUrl) {
+      const lastIndex = opponentUrl.lastIndexOf('/');
+      const index = opponentUrl.substring(lastIndex + 1, opponentUrl.lastIndexOf('.'));
+      newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${index}.gif`;
+    } else {
+      console.log("url",newUrl);
+
+      console.error('Opponent imgurl not fetched');
+    }
+  
+    return newUrl; 
+  };
+  
+  
+  const opponentDeckUrl = generateOpponentDeckUrl(opponentDeck);
+  console.log(opponentDeckUrl);
+  const mainDeckUrl = generateDeckUrl(deckData);
+
 
 
   // console.log(newUrl);
@@ -108,7 +150,7 @@ const Page = () => {
                 <img
                   alt={deckData?.data.deck[0].name}
                   height="96"
-                  src={newUrl}
+                  src={mainDeckUrl}
                   style={{
                     aspectRatio: "120/120",
                     objectFit: "cover",
@@ -129,23 +171,25 @@ const Page = () => {
           <div className="grid items-center justify-center w-full gap-4">
             <div className="grid items-center justify-center gap-2 pl-80 pb-56">
               <div className="flex items-center gap-2">
-                <img
-                  alt="Charizard"
-                  height="96"
-                  src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/6.gif"
-                  style={{
-                    aspectRatio: "96/96",
-                    objectFit: "cover",
-                  }}
-                  width="96"
-                />
+              {opponentDeck && opponentDeck.length > 0 && opponentDeck[0] && (
+                      <img
+                        alt={opponentDeck[0].name}
+                        height="96"
+                        src={opponentDeckUrl}
+                        style={{
+                          aspectRatio: '120/120',
+                          objectFit: 'cover',
+                        }}
+                        width="96"
+                      />
+                    )}
 
                 <div className="grid items-center gap-1  ">
-                  <h3 className="text-lg font-bold">Charizard</h3>
+                  <h3 className="text-lg font-bold">{opponentDeck[0]?.name}</h3>
                   <div className="flex rounded-full border border-gray-200 w-full h-2">
                     <div className="rounded-full bg-green-500 w-1/2 h-2" />
                   </div>
-                  <p className="text-sm font-medium">HP: 50/100</p>
+                  <p className="text-sm font-medium">{`HP: ${opponentDeck[0]?.hp}`}</p>
                 </div>
               </div>
             </div>
@@ -165,11 +209,11 @@ const Page = () => {
             <div className="flex flex-col gap-1 w-auto border-2 rounded-md m-2 p-2 border-orange-100">
               <h1 className='font-semibold text-xl'>Attacks</h1>
               <div className='grid grid-cols-4 gap-2'>
-                    {deckData?.data.deck[0].attacks.map((attack, index) => (
-                      <button key={index} className='border-amber-400' onClick={playerTurn ? handleAttack : undefined}>
-                        {attack.name}
-                      </button>
-                    ))}
+                  {deckData?.data.deck[0].attacks.map((attack, index) => (
+                    <button key={index} className='border-amber-400' onClick={playerTurn ? handleAttack : undefined}>
+                      {attack.name}
+                    </button>
+                  ))}
           
 
               </div>
