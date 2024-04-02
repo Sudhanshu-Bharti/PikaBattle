@@ -6,10 +6,9 @@ import { useSocket } from "../Context/SocketContext";
 
 const Page = () => {
   const router = useRouter();
-  const socketRef = useRef(null); 
+  const socketRef = useRef(null);
   const storedUserId = localStorage.getItem('userId');
-  const socket = useSocket(); 
-
+  const socket = useSocket();
   const [matchmakingComplete, setMatchmakingComplete] = useState(false);
 
   useEffect(() => {
@@ -27,16 +26,18 @@ const Page = () => {
   // }, []);
 
   useEffect(() => {
-    if (socket) { 
+    if (socket) {
       socketRef.current = socket;
-
-      //on connect
-      socket.on('connect', () => {
-        console.log("Connected to Server");
+      if (socket.connected) {
+        console.log("Socket connected.");
         socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
-      });
+      } else {
+        console.log("Socket not connected. reconnecting");
+        socket.connect(); // Attempt to reconnect
+      }
+      // Listen for battle-started event
       socket.on('battle-started', (res) => {
-        console.log(res);
+        // console.log(res);
         setMatchmakingComplete(true);
       });
     }
