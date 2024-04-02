@@ -15,6 +15,7 @@ const Page = () => {
   const [playerTurn, setPlayerTurn] = useState(true); 
   const [waiting, setWaiting] = useState(false); 
   const [deckData, setDeckData] = useState(null);
+  const[opponentDeck,setOpponentDeck]=useState({});
 
 
     
@@ -34,15 +35,28 @@ const Page = () => {
   };
 
   useEffect(() => {
-    socket.on('playerTurn', (data) => {
+    if(socket)
+    {
+      socket.on('playerTurn', (data) => {
       setPlayerTurn(true);
       setWaiting(false);
     });
-    socket.on('opponent-deck',(res)=>console.log(res));
+    socket.on('opponent-deck',(res)=>{
+      console.log(res);
+      setOpponentDeck(res?.data);
+    });
+    
+  
     return () => {
       socket.off('playerTurnChange');
     }
+  }
   }, [socket]);
+  useEffect(()=>{
+    if(socket){
+      socket.emit('opponent-deck', {message:'opponentDeck',deckData});
+    }
+  },[socket,deckData])
     
   useEffect(() => {
     const fetchDeckData = async () => {
@@ -56,7 +70,7 @@ const Page = () => {
         // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/25.gif"
         console.log(response.data);
         setDeckData(response.data);
-        socket.broadcast.emit('opponent-deck', response.data);
+        // socket.broadcast.emit('opponent-deck', response.data);
       } catch (error) {
         console.error('Error fetching deck data:', error);
       }
@@ -64,6 +78,7 @@ const Page = () => {
 
     fetchDeckData();
   }, []);
+
 
       //ye sb link lene k liye h
         const url = deckData && deckData.data && deckData.data.deck && deckData.data.deck[0] && deckData.data.deck[0].imgUrl;
