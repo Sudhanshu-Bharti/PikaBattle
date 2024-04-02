@@ -17,13 +17,13 @@ const Page = () => {
     }
   }, [storedUserId, router]);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setMatchmakingComplete(true);
-  //   }, 30000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMatchmakingComplete(true);
+    }, 30000);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (socket) {
