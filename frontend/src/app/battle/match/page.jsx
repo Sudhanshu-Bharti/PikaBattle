@@ -2,12 +2,13 @@
 import {React, useEffect, useState} from 'react';
 import { Button } from '../../../components/ui/button';
 import axios from "axios" 
-import { useSocket } from '../../Context/SocketContext';
+import { useSocket,useRoom } from '../../Context/SocketContext';
 
 const Page = () => {
 
   // const socket = io('http://localhost:4000'); 
   const socket=useSocket();
+  const { room,setRoom} = useRoom();
 
   const [playerTurn, setPlayerTurn] = useState(true); 
   const [waiting, setWaiting] = useState(false); 
@@ -47,6 +48,9 @@ const Page = () => {
         console.log("Received invalid deck data:", res.deckData);
       }
     });
+    socket.on('demand-deck',()=>{
+      socket.emit('opponent-deck', {message:'opponentDeck',room,deckData});
+    })
     
     
   
@@ -59,10 +63,20 @@ const Page = () => {
   
   useEffect(()=>{
     if(socket){
-      socket.emit('opponent-deck', {message:'opponentDeck',deckData});
+      socket.emit('opponent-deck', {message:'opponentDeck',room,deckData});
     }
     // console.log("opp deck",);
-  },[socket,deckData])
+  },[socket,deckData,room]);
+
+  useEffect(()=>{
+    const opponentUrl = opponentDeck &&  opponentDeck?.length > 0 && opponentDeck[0]?.imgUrl;
+    if(!opponentUrl){
+      if(socket){
+      console.log('demanding deck');
+      socket.emit('demand-deck','deck is needed')
+    }
+    }
+  },[opponentDeck,socket])
     
 
   // useEffect(()=>{
