@@ -1,10 +1,12 @@
 "use client"
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState,useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext();
+const RoomContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
+export const useRoom = () => useContext(RoomContext);
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -18,7 +20,19 @@ export const SocketProvider = ({ children }) => {
 
   return (
     <SocketContext.Provider value={socket}>
-      {children}
+      <RoomProvider>
+        {children}
+      </RoomProvider>
     </SocketContext.Provider>
+  );
+};
+
+const RoomProvider = ({ children }) => {
+  const [room, setRoom] = useState(null);
+
+  return (
+    <RoomContext.Provider value={{ room, setRoom }}>
+      {children}
+    </RoomContext.Provider>
   );
 };

@@ -2,13 +2,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from "../../components/ui/progress";
-import { useSocket } from "../Context/SocketContext";
+import { useSocket,useRoom } from "../Context/SocketContext";
 
 const Page = () => {
   const router = useRouter();
   const socketRef = useRef(null);
   const storedUserId = localStorage.getItem('userId');
   const socket = useSocket();
+  const {room,setRoom}=useRoom();
   const [matchmakingComplete, setMatchmakingComplete] = useState(false);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ const Page = () => {
       }
       // Listen for battle-started event
       socket.on('battle-started', (res) => {
+        setRoom(res.room);
         // console.log(res);
         setMatchmakingComplete(true);
       });

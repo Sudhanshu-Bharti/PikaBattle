@@ -28,7 +28,10 @@ class lobby{
         battleRooms.set(id,room);
         player1.socket.join(id);
         player2.socket.join(id);
-        io.to(id).emit('battle-started',`${player1.username} and ${player2.username} started a battle`);
+        io.to(id).emit('battle-started',{
+            room:id,
+            message:`${player1.username} and ${player2.username} started a battle in room id ${id}`
+        });
         let player1_index=userList.indexOf(player1);
         let player2_index=userList.indexOf(player2);
         userList.splice(player1_index,1);
