@@ -41,10 +41,12 @@ io.on('connection',(socket)=>{
     });
     socket.on('opponent-deck',(res)=>{
         // socket.broadcast.emit('opponent-deck',res);
+        console.log('server sending deck:',res);
         socket.broadcast.to(res.room).emit('opponent-deck',res);
         // console.log(socket.rooms);
     });
     socket.on('demand-deck',(res)=>{
+        console.log('deck is demanded');
         socket.broadcast.emit('demand-deck',res);
 
     })

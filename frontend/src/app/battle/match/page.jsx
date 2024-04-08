@@ -3,12 +3,12 @@ import {React, useEffect, useState} from 'react';
 import { Button } from '../../../components/ui/button';
 import axios from "axios" 
 import { useSocket,useRoom } from '../../Context/SocketContext';
-
+import { io } from 'socket.io-client';
 const Page = () => {
 
   // const socket = io('http://localhost:4000'); 
-  const socket=useSocket();
-  const { room,setRoom} = useRoom();
+  const {socket}=useSocket();
+  let { room,setRoom} = useRoom();
 
   const [playerTurn, setPlayerTurn] = useState(true); 
   const [waiting, setWaiting] = useState(false); 
@@ -63,7 +63,13 @@ const Page = () => {
   
   useEffect(()=>{
     if(socket){
-      socket.emit('opponent-deck', {message:'opponentDeck',room,deckData});
+      if(room){
+        socket.emit('opponent-deck', {message:'opponentDeck',room,deckData});
+      }else{
+        room=sessionStorage.getItem('room');
+        socket.emit('opponent-deck', {message:'opponentDeck',room,deckData});
+      }
+      
     }
     // console.log("opp deck",);
   },[socket,deckData,room]);
@@ -79,16 +85,6 @@ const Page = () => {
   },[opponentDeck,socket])
     
 
-  // useEffect(()=>{
-  //   socket.on('opponent-deck',(res)=>{
-  //     console.log(res);
-      
-  //     const opponentDeckData = res.deckData;
-    
-  //     setOpponentDeck(opponentDeckData);
-  //   });
-    
-  // } , [])
 
   useEffect(() => {
     const fetchDeckData = async () => {
@@ -102,7 +98,7 @@ const Page = () => {
         // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/25.gif"
         console.log(response.data);
         setDeckData(response.data);
-        // socket.broadcast.emit('opponent-deck', response.data);
+    
       } catch (error) {
         console.error('Error fetching deck data:', error);
       }
@@ -137,8 +133,8 @@ const Page = () => {
       newUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${index}.gif`;
     } else {
       console.log("url",newUrl);
-
       console.error('Opponent imgurl not fetched');
+      socket.emit('demand-deck','deck is needed')
     }
   
     return newUrl; 

@@ -11,15 +11,15 @@ export const useRoom = () => useContext(RoomContext);
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const newSocket = io('http://localhost:4000');
-    setSocket(newSocket);
+  // useEffect(() => {
+  //   const newSocket = io('http://localhost:4000');
+  //   setSocket(newSocket);
 
-    return () => newSocket.close();
-  }, []);
+  //   return () => newSocket.close();
+  // }, []);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{socket,setSocket}}>
       <RoomProvider>
         {children}
       </RoomProvider>

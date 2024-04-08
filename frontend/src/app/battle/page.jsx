@@ -3,13 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from "../../components/ui/progress";
 import { useSocket,useRoom } from "../Context/SocketContext";
+import { io } from 'socket.io-client';
+
 
 const Page = () => {
   const router = useRouter();
-  const socketRef = useRef(null);
+  const socket = useRef(null);
   const storedUserId = localStorage.getItem('userId');
-  const socket = useSocket();
+  // const socket = io('http://localhost:4000');
   const {room,setRoom}=useRoom();
+  const {setSocket}=useSocket();
   const [matchmakingComplete, setMatchmakingComplete] = useState(false);
 
   useEffect(() => {
@@ -18,32 +21,25 @@ const Page = () => {
     }
   }, [storedUserId, router]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMatchmakingComplete(true);
-    }, 30000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (socket) {
-      socketRef.current = socket;
-      if (socket.connected) {
-        console.log("Socket connected.");
-        socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
-      } else {
-        console.log("Socket not connected. reconnecting");
-        socket.connect(); // Attempt to reconnect
-      }
-      // Listen for battle-started event
-      socket.on('battle-started', (res) => {
-        setRoom(res.room);
-        // console.log(res);
-        setMatchmakingComplete(true);
-      });
-    }
-  }, [socket, storedUserId]);
+ 
+  useEffect(()=>{
+    const newSocket=io('http://localhost:4000/');//or your server link sudhanshu dekh lena ek baar 
+    socket.current=newSocket;
+    setSocket(newSocket);
+    //on connect
+    newSocket.on('connect',()=>{
+      console.log("Connected to Server");
+      newSocket.emit('addUser',{playerId:storedUserId,username:'soham'});
+    
+    });
+    newSocket.on('battle-started',(res)=>{
+      setRoom(res.room);
+      sessionStorage.setItem('room',res.room);
+      console.log(res);
+      console.log(newSocket);
+      setMatchmakingComplete(true)
+    });}
+  ,[])
 
   useEffect(() => {
     if (matchmakingComplete) {
