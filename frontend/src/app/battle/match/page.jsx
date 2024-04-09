@@ -15,7 +15,22 @@ const Page = () => {
   const [deckData, setDeckData] = useState(null);
   const[opponentDeck,setOpponentDeck]=useState({});
 
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
 
+    const beforeUnloadHandler = (event) => {
+      handleBeforeUnload(event);
+    };
+
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnloadHandler);
+    };
+  }, []);
     
   const handleAttack = async () => {
       console.log("attack by user");
