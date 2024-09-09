@@ -17,7 +17,7 @@ const pokemonSchema={
 
 const deckSchema=Schema({
     playerId:{
-        type:Schema.Types.ObjectId,  //ref to user
+        type: String,  //ref to user
         ref:"Player"
     },
     deck:[pokemonSchema]

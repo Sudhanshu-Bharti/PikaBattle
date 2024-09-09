@@ -6,7 +6,7 @@ const Navbar = async () => {
 
 
   return (
-    <header className="w-full sticky top-0">
+    <header className="w-full top-0">
       <div className=" p-4 flex items-center justify-between bg-orange-300">
         <Link href="/" className="flex items-center gap-2">
         <Image className="top-1 right-1  relative" src="/charizard-mega-x.png" width="50" height="50"/>
