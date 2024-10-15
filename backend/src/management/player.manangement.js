@@ -3,17 +3,30 @@ import { io } from '../app.js';
 
 const userList=[]; 
 const battleRooms=new Map();
+const userSocketMap=new Map();
+
 
 class lobby{
     addUser=async(playerId,username,socket)=>{
         const existingIndex = userList.findIndex(user => user.playerId === playerId);
         if (existingIndex !== -1) {
             // Update the existing user entry
+            for(let room of battleRooms.values()){
+                if(room.player1==playerId){
+                    room.player1.socket=socket;
+                    room.player1.username=socket.id;
+                }else if(room.player2==playerId){
+                    room.player2.socket=socket;
+                    room.player2.username=socket.id;
+                }
+            }
             userList[existingIndex] = { playerId, username, socket };
+            
             console.log(`Updated user with playerId ${playerId}`);
         } else {
             // Add a new user entry
             const newPlayer = { playerId, username, socket };
+            
             userList.push(newPlayer);
             console.log(`Added new user with playerId ${playerId}`);
         }

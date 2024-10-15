@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 const inter = Inter({ subsets: ["latin"] });
-import {SocketProvider } from "../app/Context/SocketContext"
+import {RoomProvider, SocketProvider } from "../app/Context/SocketContext"
 
 export const metadata = {
   title: "PikaBattle",
@@ -15,9 +15,11 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={(inter.className)}>
           <SocketProvider>
+          <RoomProvider>
               <Navbar/> 
                 {children}
               <Footer/>
+              </RoomProvider>
           </SocketProvider>
       </body>
   </html>

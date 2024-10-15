@@ -1,47 +1,56 @@
-"use client"
-import React, { useEffect, useRef, useState } from 'react';
+"use client";
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Progress } from "../../components/ui/progress";
-import { useSocket,useRoom } from "../Context/SocketContext";
-import { io } from 'socket.io-client';
-
+import { useSocket, useRoom } from "../Context/SocketContext";
 
 const Page = () => {
   const router = useRouter();
-  const socket = useRef(null);
-  const storedUserId = localStorage.getItem('userId');
-  // const socket = io('http://localhost:4000');
-  const {room,setRoom}=useRoom();
-  const {setSocket}=useSocket();
+  const { room, setRoom } = useRoom();
+  const { socket } = useSocket();
+  
+  const [storedUserId, setStoredUserId] = useState(null);
   const [matchmakingComplete, setMatchmakingComplete] = useState(false);
 
+  // Get userId from localStorage only on the client side
   useEffect(() => {
-    if (!storedUserId) {
-      router.push('/login');
+    if (typeof window !== 'undefined') {
+      const userId = localStorage.getItem('userId');
+      setStoredUserId(userId);
     }
-  }, [storedUserId, router]);
+  }, []);
 
+  // Redirect to login if no stored user ID is found
+  // useEffect(() => {
+  //   if (!storedUserId) {
+  //     router.push('/login');
+  //   }
+  // }, [storedUserId, router,setStoredUserId]);
 
- 
-  useEffect(()=>{
-    const newSocket=io('http://localhost:4000/');//or your server link sudhanshu dekh lena ek baar 
-    socket.current=newSocket;
-    setSocket(newSocket);
-    //on connect
-    newSocket.on('connect',()=>{
-      console.log("Connected to Server");
-      newSocket.emit('addUser',{playerId:storedUserId,username:'soham'});
-    
-    });
-    newSocket.on('battle-started',(res)=>{
-      setRoom(res.room);
-      sessionStorage.setItem('room',res.room);
-      console.log(res);
-      console.log(newSocket);
-      setMatchmakingComplete(true)
-    });}
-  ,[])
+  // Socket events
+  useEffect(() => {
+    if (socket) {
+      socket.on('connect', () => {
+        console.log("Connected to Server");
+        socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
+      });
 
+      socket.on('battle-started', (res) => {
+        setRoom(res.room);
+        sessionStorage.setItem('room', res.room);
+        console.log(res);
+        console.log(socket);
+        setMatchmakingComplete(true);
+      });
+
+      return () => {
+        socket.off('connect');
+        socket.off('battle-started');
+      };
+    }
+  }, [socket, storedUserId, setRoom]);
+
+  // Redirect to match page when matchmaking is complete
   useEffect(() => {
     if (matchmakingComplete) {
       router.push('/battle/match');

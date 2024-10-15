@@ -27,17 +27,17 @@ const io=new Server(server,{
         credentials:true
     }
 });
-const battleLobby=new lobby;
+const battleLobby=new lobby();
 
 // socket things
 io.on('connection',(socket)=>{
     console.log('user '+socket.id); 
-    socket.on('addUser',(res)=>{
+    socket.on('addUser',async(res)=>{
         console.log(res);
-        battleLobby.addUser(res.playerId,socket.id,socket);
-        battleLobby.showUsers();
-        battleLobby.matchMaking();  
-        battleLobby.showUsers();   
+        await battleLobby.addUser(res.playerId,socket.id,socket);
+        await battleLobby.showUsers();
+        await battleLobby.matchMaking();  
+        await battleLobby.showUsers();   
     });
     socket.on('opponent-deck',(res)=>{
         // socket.broadcast.emit('opponent-deck',res);
