@@ -8,19 +8,28 @@ const userSocketMap=new Map();
 
 class lobby{
     addUser=async(playerId,username,socket)=>{
-        const existingIndex = userList.findIndex(user => user.playerId === playerId);
-        if (existingIndex !== -1) {
+        console.log('PlayerId:',playerId);
+        userList.forEach((e)=>console.log('playerId:',e.playerId));
+        
+        // const existingIndex = userList.findIndex(user => user.playerId === playerId);
+        const existingIndex = userSocketMap.get(playerId);
+        console.log('Existing user:',existingIndex);
+        await this.showUsers() 
+        if (existingIndex !== undefined) {
             // Update the existing user entry
             for(let room of battleRooms.values()){
-                if(room.player1==playerId){
+                if(room.player1.playerId==playerId){
                     room.player1.socket=socket;
                     room.player1.username=socket.id;
-                }else if(room.player2==playerId){
+                    socket.join(room.roomId);
+                }else if(room.player2.playerId==playerId){
                     room.player2.socket=socket;
                     room.player2.username=socket.id;
+                    socket.join(room.roomId);
                 }
             }
             userList[existingIndex] = { playerId, username, socket };
+            userSocketMap.set(playerId,{ playerId, username, socket });
             
             console.log(`Updated user with playerId ${playerId}`);
         } else {
@@ -28,6 +37,10 @@ class lobby{
             const newPlayer = { playerId, username, socket };
             
             userList.push(newPlayer);
+            userSocketMap.set(playerId,{ playerId, username, socket });
+            // await this.showUsers();
+            await this.matchMaking();  
+            // await this.showUsers();  
             console.log(`Added new user with playerId ${playerId}`);
         }
     }

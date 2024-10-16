@@ -29,11 +29,12 @@ const Page = () => {
 
   // Socket events
   useEffect(() => {
-    if (socket) {
-      socket.on('connect', () => {
-        console.log("Connected to Server");
-        socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
-      });
+    if (socket&&storedUserId) {
+      // socket.on('connect', () => {
+      //   console.log("Connected to Server");
+      //   socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
+      // });
+      socket.emit('addUser', { playerId: storedUserId, username: 'soham' });
 
       socket.on('battle-started', (res) => {
         setRoom(res.room);

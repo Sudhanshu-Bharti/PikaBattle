@@ -35,9 +35,9 @@ io.on('connection',(socket)=>{
     socket.on('addUser',async(res)=>{
         console.log(res);
         await battleLobby.addUser(res.playerId,socket.id,socket);
-        await battleLobby.showUsers();
-        await battleLobby.matchMaking();  
-        await battleLobby.showUsers();   
+        // await battleLobby.showUsers();
+        // await battleLobby.matchMaking();  
+        // await battleLobby.showUsers();   
     });
     socket.on('opponent-deck',(res)=>{
         // socket.broadcast.emit('opponent-deck',res);

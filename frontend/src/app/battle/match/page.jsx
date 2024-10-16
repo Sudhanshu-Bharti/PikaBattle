@@ -52,7 +52,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (socket) {
+    if (socket&&storedUserId) {
       socket.emit('addUser',{playerId:storedUserId,username:'soham'});
       socket.on("playerTurn", (data) => {
         setPlayerTurn(true);
@@ -68,8 +68,21 @@ const Page = () => {
         }
       });
 
-      socket.on("demand-deck", () => {
-        socket.emit("opponent-deck", { message: "opponentDeck", room, deckData });
+      socket.on("demand-deck", async() => {
+        try {
+          const playerId = localStorage.getItem("userId");
+          console.log(playerId);
+          const response = await axios.post("http://localhost:4000/get-pokemon-info", {
+            playerId,
+          });
+          console.log(response.data);
+          const deck=response.data;
+          socket.emit("opponent-deck", { message: "opponentDeck", room, deck });
+          setDeckData(response.data);
+        } catch (error) {
+          console.error("Error fetching deck data:", error);
+        }
+        
       });
 
       return () => {
@@ -78,7 +91,7 @@ const Page = () => {
         socket.off("demand-deck");
       };
     }
-  }, [socket]);
+  }, [socket,storedUserId]);
 
   useEffect(() => {
     if (socket && deckData) {
@@ -97,21 +110,35 @@ const Page = () => {
       socket.emit("demand-deck", "deck is needed");
     }
   }, [opponentDeck, socket]);
+  const fetchDeckData = async () => {
+    try {
+      const playerId = localStorage.getItem("userId");
+      console.log(playerId);
+      const response = await axios.post("http://localhost:4000/get-pokemon-info", {
+        playerId,
+      });
+      console.log(response.data);
+      setDeckData(response.data);
+    } catch (error) {
+      console.error("Error fetching deck data:", error);
+    }
+  };
+
 
   useEffect(() => {
-    const fetchDeckData = async () => {
-      try {
-        const playerId = localStorage.getItem("userId");
-        console.log(playerId);
-        const response = await axios.post("http://localhost:4000/get-pokemon-info", {
-          playerId,
-        });
-        console.log(response.data);
-        setDeckData(response.data);
-      } catch (error) {
-        console.error("Error fetching deck data:", error);
-      }
-    };
+    // const fetchDeckData = async () => {
+    //   try {
+    //     const playerId = localStorage.getItem("userId");
+    //     console.log(playerId);
+    //     const response = await axios.post("http://localhost:4000/get-pokemon-info", {
+    //       playerId,
+    //     });
+    //     console.log(response.data);
+    //     setDeckData(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching deck data:", error);
+    //   }
+    // };
 
     fetchDeckData();
   }, []);
