@@ -8,7 +8,7 @@ import MyPokemons from '../../components/my pokemons/my-pokemons'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { useRouter } from 'next/navigation'
 
-const page = ({children}) => {
+const page = () => {
   
   const storedUserId = localStorage.getItem('userId');
 
