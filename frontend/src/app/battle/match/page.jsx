@@ -4,6 +4,7 @@ import { Button } from "../../../components/ui/button";
 import axios from "axios";
 import { useSocket, useRoom } from "../../Context/SocketContext";
 import { motion, AnimatePresence } from "framer-motion";
+import PokemonParty from "../../../components/pokemon-party/party";
 
 const Page = () => {
   const { socket } = useSocket();
@@ -14,7 +15,9 @@ const Page = () => {
   const [deckData, setDeckData] = useState(null);
   const [opponentDeck, setOpponentDeck] = useState([]);
   const [selectedAttack, setSelectedAttack] = useState(null);
+  const [currentPokemonIndex, setCurrentPokemonIndex] = useState(0);
   const [battleLog, setBattleLog] = useState([]);
+  const [party, setParty] = useState([]); 
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -97,8 +100,12 @@ const Page = () => {
 
   useEffect(() => {
     if (socket && deckData) {
+      setParty(deckData?.data?.deck || []);
+      console.log("Party data: ", party);
       if (room) {
         socket.emit("opponent-deck", { message: "opponentDeck", room, deckData });
+
+        
       } else {
         room = sessionStorage.getItem("room");
         socket.emit("opponent-deck", { message: "opponentDeck", room, deckData });
@@ -199,6 +206,11 @@ const Page = () => {
     }
   };
 
+  const handleSwitchPokemon = (index) => {
+    setCurrentPokemonIndex(index);
+    setBattleLog((prev) => [...prev, `Switched to ${party[index]?.name}`]);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-600">
       <div className="relative w-full h-[32rem] overflow-hidden">
@@ -210,12 +222,11 @@ const Page = () => {
             filter: "contrast(1.1) brightness(1.1)",
           }}
         >
-          {/* Battle Platform Glow Effects */}
+
           <div className="absolute bottom-0 left-1/4 w-32 h-32 bg-blue-400 rounded-full filter blur-3xl opacity-20 animate-pulse" />
           <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-red-400 rounded-full filter blur-3xl opacity-20 animate-pulse" />
           
           <div className="flex justify-between items-center h-full px-12">
-            {/* Player Pokemon */}
             <motion.div 
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -297,7 +308,6 @@ const Page = () => {
           </motion.div>
         ) : (
           <div className="grid grid-cols-2 gap-6">
-            {/* Attacks */}
             <div className="bg-gray-800/50 p-4 rounded-xl">
               <h2 className="text-xl font-bold text-white mb-4">Attacks</h2>
               <div className="grid grid-cols-2 gap-3">
@@ -343,9 +353,15 @@ const Page = () => {
             </div>
           </div>
         )}
-
-        {/* Battle Log */}
+          <div className="mt-2" >
+          <PokemonParty
+              party={party}
+              onSwitchPokemon={handleSwitchPokemon}
+              currentPokemon={currentPokemonIndex}
+            />
+          </div>
         <div className="mt-4 bg-black/30 rounded-lg p-3 max-h-32 overflow-y-auto">
+
           <AnimatePresence>
             {battleLog.map((log, index) => (
               <motion.div
@@ -358,9 +374,12 @@ const Page = () => {
                 {log}
               </motion.div>
             ))}
+            
           </AnimatePresence>
+
         </div>
       </div>
+     
     </div>
   );
 };
